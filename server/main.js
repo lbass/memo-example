@@ -15,6 +15,12 @@ import api from '../routes';
 
 
 const app = express();
+app.use(session({
+    secret: 'CodeLab1$1$234',
+    resave: false,
+    saveUninitialized: true
+}));
+
 const port = 3000;
 const devPort = 4000;
 
@@ -26,12 +32,6 @@ app.use(bodyParser.json());
 app.use('/', express.static(path.join(__dirname, './../public')));
 //router 설정
 app.use('/api', api);
-
-app.use(session({
-    secret: 'CodeLab1$1$234',
-    resave: false,
-    saveUninitialized: true
-}));
 
 /*
 elastic.indexExists().then(
@@ -68,6 +68,11 @@ elastic.indexExists().then(
 
 app.listen(port, () => {
     console.log('Express is listening on port', port);
+});
+
+app.use(function(err, req, res, next) {
+  console.error(err.stack);
+  res.status(500).send('Something broke!');
 });
 
 if(process.env.NODE_ENV == 'development') {
