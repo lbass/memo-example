@@ -26,29 +26,55 @@ router.post('/signup', (req, res) => {
     // CHECK USER EXISTANCE
 
     Account.signup({ username: req.body.username, password: req.body.password },
-        error => {
+        (error) => {
             if (error) {
-                return res.status(500).json({ error: error, code: 3 });
+                throw error;
+                //return res.status(500).json({ error: error, code: 3 });
             }
             return res.status(200).json({ success: true });
         }
     );
 
-
 });
 
 
 router.post('/signin', (req, res) => {
-    /* to be implemented */
-    res.json({ success: true });
+    if(typeof req.body.password !== "string") {
+        return res.status(401).json({
+            error: "LOGIN FAILED",
+            code: 1
+        });
+    }
+
+    Account.signin({ username: req.body.username, password: req.body.password },
+        (error, account) => {
+            if (error) {
+                throw error;
+                //return res.status(500).json({ error: error, code: 3 });
+            }
+            let session = req.session;
+            session.loginInfo = {
+                _id: account._id,
+                username: account.username
+            };
+            return res.status(200).json({ success: true });
+        }
+    );
+
 });
 
 router.get('/getinfo', (req, res) => {
-    res.json({ info: null });
+    if(typeof req.session.loginInfo === "undefined") {
+        return res.status(401).json({
+            error: 1
+        });
+    }
+    return res.status(200).json({ info: req.session.loginInfo });
 });
 
 router.post('/logout', (req, res) => {
-    return res.json({ success: true });
+    req.session.destroy(err => { if(error) throw error; });
+    return res.status(200).json({ sucess: true });
 });
 
 export default router;

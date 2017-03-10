@@ -7,7 +7,7 @@ const elasticClient = new elasticsearch.Client({
 
 class EsClient {
     static findOne(index, type, param, func) {
-        var result = elasticClient.search({
+        let result = elasticClient.search({
                 index: index,
                 type: type,
                 body: {
@@ -33,7 +33,7 @@ class EsClient {
     }
 
     static getCount(index, type, func) {
-        var result = elasticClient.count({
+        let result = elasticClient.count({
                 index: index,
                 type: type,
                 size: 1,
@@ -73,7 +73,7 @@ class EsClient {
     }
 
     static createIndex() {
-        var result = elasticClient.create({
+        let result = elasticClient.create({
             index: 'testindex',
             type: 'testtype',
             id: '1',
