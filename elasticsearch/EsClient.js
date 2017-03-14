@@ -32,18 +32,67 @@ class EsClient {
                 });
     }
 
-    static getCount(index, type, func) {
+    static getLastCount(index, type, func) {
         let result = elasticClient.count({
                 index: index,
                 type: type,
                 size: 1,
                 sort: {
-                    'timestamp': 'desc'
+                    timestamp: 'desc'
                 }
             },
             function (error, response) {
                 if(error) func.call(this, error);
                 func.call(this, undefined, response.count);
+            }
+        );
+    }
+
+    static get(index, type, id, func) {
+        let result = elasticClient.get({
+                index: index,
+                type: type,
+                id: id
+            },
+            function (error, response) {
+                if(error) func.call(this, error);
+                if(response && response._source) {
+                    func.call(this, undefined, response._source);
+                } else {
+                    func.call(this, undefined, null);
+                }
+            }
+        );
+    }
+
+    static getList(index, type, func) {
+        let result = elasticClient.search({
+                index: index,
+                type: type,
+                body: {
+                    size: 10,
+                    query: {
+                        match_all: {}
+                    },
+                    sort: {
+                        created : { order : "desc"}
+                    }
+                }
+            },
+            function (error, response) {
+                if(error) func.call(this, error);
+                if(response && response.hits && response.hits.total > 0) {
+                    const resultList = response.hits.hits;
+                    let memos = [];
+                    resultList.forEach(
+                        (value) => {
+                            memos.push(value._source);
+                        }
+                    );
+                    func.call(this, undefined, memos);
+                } else {
+                    func.call(this, undefined, null);
+                }
             }
         );
     }
@@ -88,6 +137,17 @@ class EsClient {
             console.info(error);
         });
         console.info(result);
+    }
+
+    static delete(index, type, id, func) {
+        elasticClient.delete({
+            index: index,
+            type: type,
+            id: id
+        }, function (error, response) {
+            if(error) func.call(this, error);
+            func.call(this, undefined) ;
+        });
     }
 }
 
