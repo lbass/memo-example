@@ -74,22 +74,24 @@ class EsClient {
                     query: {
                         match_all: {}
                     },
-                    sort: {
-                        created : { order : "desc"}
-                    }
+                    sort: [{ "_uid": { "order": "desc" }}]
                 }
             },
             function (error, response) {
                 if(error) func.call(this, error);
                 if(response && response.hits && response.hits.total > 0) {
-                    const resultList = response.hits.hits;
-                    let memos = [];
-                    resultList.forEach(
+                    const hits = response.hits.hits;
+                    let resultList = [];
+                    hits.forEach(
                         (value) => {
-                            memos.push(value._source);
+                            let result = {
+                                ...value._source,
+                                id: value._id
+                            }
+                            resultList.push(result);
                         }
                     );
-                    func.call(this, undefined, memos);
+                    func.call(this, undefined, resultList);
                 } else {
                     func.call(this, undefined, null);
                 }
@@ -103,6 +105,29 @@ class EsClient {
             type: type,
             body: param,
             id: id
+        }, function (error, response) {
+            if(error) func.call(this, error);
+            func.call(this, undefined) ;
+        });
+    }
+
+    static update(index, type, id, param, func) {
+        elasticClient.update({
+            index: index,
+            type: type,
+            body: {
+                doc: param
+            },
+            id: id
+        }, function (error, response) {
+            if(error) func.call(this, error);
+            func.call(this, undefined) ;
+        });
+    }
+
+    static bulk(bulkList, func) {
+        elasticClient.bulk({
+            body: bulkList
         }, function (error, response) {
             if(error) func.call(this, error);
             func.call(this, undefined) ;
