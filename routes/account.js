@@ -9,29 +9,19 @@ router.post('/signup', (req, res) => {
     let usernameRegex = /^[a-z0-9]+$/;
 
     if(!usernameRegex.test(req.body.username)) {
-        return res.status(400).json({
-            error: "BAD USERNAME",
-            code: 1
-        });
+        return ErrorMessageHandler.handleError({ message: 'account.001' }, res);
     }
 
     // CHECK PASS LENGTH
     if(req.body.password.length < 4 || typeof req.body.password !== "string") {
-        return res.status(400).json({
-            error: "BAD PASSWORD",
-            code: 2
-        });
+        return ErrorMessageHandler.handleError({ message: 'account.002' }, res);
     }
 
     // CHECK USER EXISTANCE
 
     Account.signup({ username: req.body.username, password: req.body.password },
         (error) => {
-            if (error) {
-                throw error;
-                //return res.status(500).json({ error: error, code: 3 });
-            }
-            return res.status(200).json({ success: true });
+            return ErrorMessageHandler.handleError(error, res, { success: true });
         }
     );
 
@@ -39,24 +29,19 @@ router.post('/signup', (req, res) => {
 
 router.post('/signin', (req, res) => {
     if(typeof req.body.password !== "string") {
-        return res.status(401).json({
-            error: "LOGIN FAILED",
-            code: 1
-        });
+        return ErrorMessageHandler.handleError({ message: 'account.005' }, res);
     }
 
     Account.signin({ username: req.body.username, password: req.body.password },
         (error, account) => {
-            if (error) {
-                throw error;
-                //return res.status(500).json({ error: error, code: 3 });
+            if(account) {
+                let session = req.session;
+                session.loginInfo = {
+                    _id: account._id,
+                    username: account.username
+                };
+                return ErrorMessageHandler.handleError(error, res, { success: true });
             }
-            let session = req.session;
-            session.loginInfo = {
-                _id: account._id,
-                username: account.username
-            };
-            return res.status(200).json({ success: true });
         }
     );
 
@@ -64,16 +49,17 @@ router.post('/signin', (req, res) => {
 
 router.get('/getinfo', (req, res) => {
     if(typeof req.session.loginInfo === "undefined") {
-        return res.status(401).json({
-            error: 1
-        });
+        return ErrorMessageHandler.handleError({ message: 'account.006' }, res);
     }
-    return res.status(200).json({ info: req.session.loginInfo });
+    return ErrorMessageHandler.handleError(undefined, res, { info: req.session.loginInfo });
 });
 
 router.post('/logout', (req, res) => {
-    req.session.destroy(err => { if(error) throw error; });
-    return res.status(200).json({ sucess: true });
+    req.session.destroy(
+        (error) => {
+            return ErrorMessageHandler.handleError(error, res, { sucess: true });
+        }
+    );
 });
 
 export default router;
