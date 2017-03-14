@@ -37,7 +37,6 @@ router.post('/signup', (req, res) => {
 
 });
 
-
 router.post('/signin', (req, res) => {
     if(typeof req.body.password !== "string") {
         return res.status(401).json({
