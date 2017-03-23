@@ -1,4 +1,5 @@
 import EsClient from '../elasticsearch/EsClient';
+import sequence from 'es-sequence';
 import moment from 'moment';
 
 const TYPE_MEMO = 'memo';
@@ -21,31 +22,22 @@ const INDEX = 'memo';
 class Memo {
     static save(param, func) {
         new Promise(function (resolve, reject) {
-            EsClient.getLastCount(INDEX, TYPE_MEMO, (error, id) => {
+            let memo = {
+                writer: param.writer,
+                contents: param.contents,
+                is_edited: false,
+                starred: [],
+                seq: (new Date()).getTime(),
+                date: {
+                    created: new Date(),
+                    edited : ''
+                }
+            };
+            EsClient.save(INDEX, TYPE_MEMO, memo, (error) => {
                 if(error) {
                     return reject(error);
                 }
-                resolve(id);
-            });
-        }).then(function(id) {
-            const newId = id + 1;
-            return new Promise(function (resolve, reject) {
-                let memo = {
-                    writer: param.writer,
-                    contents: param.contents,
-                    is_edited: false,
-                    starred: [],
-                    date: {
-                        created: new Date(),
-                        edited : ''
-                    }
-                };
-                EsClient.save(INDEX, TYPE_MEMO, newId, memo, (error) => {
-                    if(error) {
-                        return reject(error);
-                    }
-                    resolve();
-                });
+                resolve();
             });
         }).then(function() {
             func.call(this, undefined);
@@ -77,14 +69,14 @@ class Memo {
         });
     }
 
-    static getLessThan(id, func) {
+    static getLessThan(seq, func) {
         new Promise(function (resolve, reject) {
             let query = {
                 size: 10,
                 query: {
                     range : {
-                        _uid: {
-                            lt : TYPE_MEMO + "#" + id
+                        seq: {
+                            lt : seq
                         }
                     }
                 },
@@ -104,14 +96,14 @@ class Memo {
         });
     }
 
-    static getGreaterThan(id, func) {
+    static getGreaterThan(seq, func) {
         new Promise(function (resolve, reject) {
             let query = {
                 size: 10,
                 query: {
                     range : {
-                        _uid: {
-                            gt : TYPE_MEMO + "#" + id
+                        seq: {
+                            gt : seq
                         }
                     }
                 },

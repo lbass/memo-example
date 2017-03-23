@@ -52,7 +52,7 @@ export function memoPostFailure(error) {
         - id:        OPTIONAL; memo id (one at the bottom or one at the top)
         - username:  OPTIONAL; find memos of following user
 */
-export function memoListRequest(isInitial, listType, id, username) {
+export function memoListRequest(isInitial, listType, seq, username) {
     return (dispatch) => {
         // inform memo list API is starting
         dispatch(memoList());
@@ -61,7 +61,7 @@ export function memoListRequest(isInitial, listType, id, username) {
 
         if(typeof username==="undefined") {
             // username not given, load public memo
-            url = isInitial ? url : `${url}/${listType}/${id}`;
+            url = isInitial ? url : `${url}/${listType}/${seq}`;
             // or url + '/' + listType + '/' +  id
         } else {
             // load memos of specific user

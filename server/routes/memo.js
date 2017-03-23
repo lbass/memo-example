@@ -87,10 +87,9 @@ router.get('/', (req, res) => {
     );
 });
 
-router.get('/:listType/:id', (req, res) => {
+router.get('/:listType/:seq', (req, res) => {
     let listType = req.params.listType;
-    let id = req.params.id;
-    console.info(req.params);
+    let seq = req.params.seq;
     // CHECK LIST TYPE VALIDITY
     if(listType !== 'old' && listType !== 'new') {
         return res.status(400).json({
@@ -100,13 +99,13 @@ router.get('/:listType/:id', (req, res) => {
     }
 
     if(listType === 'new') {
-        Memo.getGreaterThan( id,
+        Memo.getGreaterThan( seq,
             (error, memos) => {
                 return ErrorMessageHandler.handleError(error, res, memos);
             }
         );
     } else {
-        Memo.getLessThan( id,
+        Memo.getLessThan( seq,
             (error, memos) => {
                 return ErrorMessageHandler.handleError(error, res, memos);
             }
