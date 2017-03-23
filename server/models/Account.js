@@ -43,7 +43,7 @@ class Account {
                 created: d.toDateString()
             };
             return new Promise(function (resolve, reject) {
-                EsClient.save(INDEX, TYPE_ACCOUNT, newId, signData, (error) => {
+                EsClient.save(INDEX, TYPE_ACCOUNT, signData, (error) => {
                     if(error) {
                         return reject(error);
                     }

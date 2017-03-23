@@ -94,12 +94,12 @@ class EsClient {
         );
     }
 
-    static save(index, type, id, param, func) {
-        elasticClient.create({
+    static save(index, type, param, func) {
+        elasticClient.index({
             index: index,
             type: type,
             body: param,
-            id: id
+            refresh: true
         }, function (error, response) {
             if(error) func.call(this, error);
             func.call(this, undefined) ;

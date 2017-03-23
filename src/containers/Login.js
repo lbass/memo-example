@@ -15,7 +15,6 @@ class Login extends React.Component {
         return this.props.loginRequest(id, pw).then(
             () => {
                 if(this.props.status === "SUCCESS") {
-                    const browserHistory = createBrowserHistory();
                     // create session data
                     let loginData = {
                         isLoggedIn: true,
@@ -23,8 +22,10 @@ class Login extends React.Component {
                     };
 
                     document.cookie = 'key=' + btoa(JSON.stringify(loginData));
-                    Materialize.toast('Welcome, ' + id + '!', 2000);
-                    browserHistory.push('/');
+                    //Materialize.toast('Welcome, ' + id + '!', 2000);
+                    //const browserHistory = createBrowserHistory();
+                    //browserHistory.push('/');
+                    location.href = '/';
                     return true;
                 } else {
                     let $toastContent = $('<span style="color: #FFB4BA">Incorrect username or password</span>');

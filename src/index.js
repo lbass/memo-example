@@ -12,7 +12,6 @@ import thunk from 'redux-thunk';
 
 
 const store = createStore(reducers, applyMiddleware(thunk));
-
 const rootElement = document.getElementById('root');
 const history = createBrowserHistory();
 

@@ -15,24 +15,13 @@ class Register extends React.Component {
         return this.props.registerRequest(id, pw).then(
             () => {
                 if(this.props.status === "SUCCESS") {
-                    const browserHistory = createBrowserHistory();
-                    Materialize.toast('Success! Please log in.', 2000);
-                    browserHistory.push('/login');
+                    //const browserHistory = createBrowserHistory();
+                    //Materialize.toast('Success! Please log in.', 2000);
+                    //browserHistory.push('/login');
+                    location.href = '/login';
                     return true;
                 } else {
-                    /*
-                        ERROR CODES:
-                            1: BAD USERNAME
-                            2: BAD PASSWORD
-                            3: USERNAME EXISTS
-                    */
-                    let errorMessage = [
-                        'Invalid Username',
-                        'Password is too short',
-                        'Username already exists'
-                    ];
-
-                    let $toastContent = $('<span style="color: #FFB4BA">' + errorMessage[this.props.errorCode - 1] + '</span>');
+                    let $toastContent = $('<span style="color: #FFB4BA">' + this.props.error + '</span>');
                     Materialize.toast($toastContent, 2000);
                     return false;
                 }
@@ -53,7 +42,7 @@ class Register extends React.Component {
 const mapStateToProps = (state) => {
     return {
         status: state.authentication.register.status,
-        errorCode: state.authentication.register.error
+        error: state.authentication.register.error
     };
 };
 

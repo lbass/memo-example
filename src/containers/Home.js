@@ -49,7 +49,7 @@ class Home extends React.Component {
         if(this.props.memoData.length === 0 ) {
             return this.props.memoListRequest(true);
         }
-        return this.props.memoListRequest(false, 'new', this.props.memoData[0].id);
+        return this.props.memoListRequest(false, 'new', this.props.memoData[0].seq);
     }
 
     /* POST MEMO */
@@ -127,8 +127,8 @@ const mapDispatchToProps = (dispatch) => {
         memoPostRequest: (contents) => {
             return dispatch(memoPostRequest(contents));
         },
-        memoListRequest: (isInitial, listType, id, username) => {
-            return dispatch(memoListRequest(isInitial, listType, id, username));
+        memoListRequest: (isInitial, listType, seq, username) => {
+            return dispatch(memoListRequest(isInitial, listType, seq, username));
         }
     };
 };

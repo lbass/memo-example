@@ -17,11 +17,13 @@ class ErrorMessageHandler {
             let errorSet = ErrorCodeSet[error.message];
 
             if(errorSet) {
+                console.error('errorSet.message');
                 console.error(errorSet.message);
                 return res.status(errorSet.httpCode).json({ error: errorSet.message });
             } else {
+                console.error('error');
                 console.error(error);
-                return res.status(500).json({ error: error.message });
+                return res.status(500).json({ error: error });
             }
         }
         return res.status(200).json(result);

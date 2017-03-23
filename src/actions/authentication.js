@@ -27,7 +27,7 @@ export function registerRequest(username, password) {
         .then((response) => {
             dispatch(registerSuccess());
         }).catch((error) => {
-            dispatch(registerFailure(error.response.data.code));
+            dispatch(registerFailure(error.response.data.error));
         });
     };
 }
@@ -47,7 +47,7 @@ export function registerSuccess() {
 export function registerFailure(error) {
     return {
         type: AUTH_REGISTER_FAILURE,
-        error
+        error: error
     };
 }
 

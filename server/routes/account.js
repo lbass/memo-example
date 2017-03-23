@@ -41,7 +41,9 @@ router.post('/signin', (req, res) => {
                     _id: account._id,
                     username: account.username
                 };
-                return ErrorMessageHandler.handleError(error, res, { success: true });
+                return ErrorMessageHandler.handleError(undefined, res);
+            } else {
+                return ErrorMessageHandler.handleError(error, res);
             }
         }
     );
