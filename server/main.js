@@ -8,10 +8,10 @@ import morgan from 'morgan';
 import bodyParser from 'body-parser';
 import session from 'express-session';
 
-import EsClient from '../elasticsearch/EsClient';
+import EsClient from './elasticsearch/EsClient';
 
 //index.js 설정으로 전체를 불러올 수 있다.
-import api from '../routes';
+import api from './routes';
 
 
 const app = express();
@@ -29,9 +29,14 @@ EsClient.esAliveCheck();
 app.use(morgan('dev'));
 app.use(bodyParser.json());
 
-app.use('/', express.static(path.join(__dirname, './../public')));
+app.use('/', express.static(path.join(__dirname, '../public')));
 //router 설정
 app.use('/api', api);
+
+app.get('*', (req, res) => {
+    res.sendFile(path.resolve(__dirname, './../public/index.html'));
+});
+
 
 /*
 elastic.indexExists().then(
