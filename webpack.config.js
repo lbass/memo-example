@@ -1,8 +1,11 @@
 var webpack = require('webpack');
+var path = require('path');
+path.resolve.root = [ './src' ];
 
 module.exports = {
     entry: [
-        './src/index.js'
+        './src/index.js',
+        './src/style.css'
     ],
 
     output: {
@@ -20,8 +23,11 @@ module.exports = {
                     presets: ['es2015', 'react']
                 },
                 exclude: /node_modules/
+            },
+            {
+                test: /\.css$/,
+                loader: 'style-loader!css-loader'
             }
         ]
-    },
-
-}
+    }
+};
