@@ -24,44 +24,82 @@ var _bodyParser = require('body-parser');
 
 var _bodyParser2 = _interopRequireDefault(_bodyParser);
 
+var _expressSession = require('express-session');
+
+var _expressSession2 = _interopRequireDefault(_expressSession);
+
+var _EsClient = require('./elasticsearch/EsClient');
+
+var _EsClient2 = _interopRequireDefault(_EsClient);
+
+var _routes = require('./routes');
+
+var _routes2 = _interopRequireDefault(_routes);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var app = (0, _express2.default)();
+
+//index.js 설정으로 전체를 불러올 수 있다.
+
+app.use((0, _expressSession2.default)({
+    secret: 'CodeLab1$1$234',
+    resave: false,
+    saveUninitialized: true
+}));
+
 var port = 3000;
 var devPort = 4000;
 
-var documents = require('../routes/documents');
-var elastic = require('../elasticsearch/elasticsearch');
+_EsClient2.default.esAliveCheck();
 
 app.use((0, _morgan2.default)('dev'));
 app.use(_bodyParser2.default.json());
 
 app.use('/', _express2.default.static(_path2.default.join(__dirname, './../public')));
+//router 설정
+app.use('/api', _routes2.default);
 
-//elastic router
-app.use('/documents', documents);
-
-elastic.indexExists().then(function (exists) {
-    if (exists) {
-        return elastic.deleteIndex();
+/*
+elastic.indexExists().then(
+    function (exists) {
+        if(exists) {
+            return elastic.deleteIndex();
+        }
     }
-}).then(function () {
-    return elastic.initIndex().then(elastic.initMapping).then(function () {
-        var promises = ['Thing Explainer', 'The Internet Is a Playground', 'The Pragmatic Programmer', 'The Hitchhikers Guide to the Galaxy', 'Trial of the Clone'].map(function (bookTitle) {
-            return elastic.addDocument({
-                title: bookTitle,
-                content: bookTitle + " content",
-                metadata: {
-                    titleLength: bookTitle.length
-                }
-            });
-        });
-        return Promise.all(promises);
-    });
-});
+).then(
+    function () {
+        return elastic.initIndex().then(elastic.initMapping).then(
+            function () {
+                var promises = [
+                    'Thing Explainer',
+                    'The Internet Is a Playground',
+                    'The Pragmatic Programmer',
+                    'The Hitchhikers Guide to the Galaxy',
+                    'Trial of the Clone'
+                ].map(function (bookTitle) {
+                    return elastic.addDocument({
+                        title: bookTitle,
+                        content: bookTitle + " content",
+                        metadata: {
+                            titleLength: bookTitle.length
+                        }
+                    });
+                });
+                return Promise.all(promises);
+            }
+        );
+    }
+);
+*/
 
 app.listen(port, function () {
     console.log('Express is listening on port', port);
+});
+
+app.use(function (err, req, res, next) {
+    console.error(err.stack);
+    res.status(500).send('Something broke!');
 });
 
 if (process.env.NODE_ENV == 'development') {
