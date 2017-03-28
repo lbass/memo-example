@@ -111,7 +111,8 @@ class EsClient {
             index: index,
             type: type,
             body: {
-                doc: param
+                doc: param,
+                refresh: "true"
             },
             id: id
         }, function (error, response) {

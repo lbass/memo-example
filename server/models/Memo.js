@@ -1,5 +1,4 @@
 import EsClient from '../elasticsearch/EsClient';
-import sequence from 'es-sequence';
 import moment from 'moment';
 
 const TYPE_MEMO = 'memo';
@@ -49,7 +48,7 @@ class Memo {
     static get(func) {
         new Promise(function (resolve, reject) {
             let query = {
-                size: 10,
+                size: 6,
                 query: {
                     match_all: {}
                 },
@@ -71,8 +70,9 @@ class Memo {
 
     static getLessThan(seq, func) {
         new Promise(function (resolve, reject) {
+            console.info(1);
             let query = {
-                size: 10,
+                size: 6,
                 query: {
                     range : {
                         seq: {
@@ -99,7 +99,7 @@ class Memo {
     static getGreaterThan(seq, func) {
         new Promise(function (resolve, reject) {
             let query = {
-                size: 10,
+                size: 6,
                 query: {
                     range : {
                         seq: {
